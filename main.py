@@ -1,5 +1,6 @@
 from helium import *
 import time
+import os
 
 # Configurations
 url = "http://192.168.147.74/ConMasManager/"
@@ -7,6 +8,8 @@ login_page = url + "Login"
 data_output_page = url + "DataOutput"
 username = "user30"
 password = "user30"
+project_dir = os.path.dirname(os.path.abspath(__file__))  # Root directory of the code
+download_dir = project_dir  # Set download directory to the code directory
 
 
 # Initialize browser
@@ -43,6 +46,31 @@ def navigate_and_perform_tasks():
     for checkbox in checkboxes:
         click(CheckBox(checkbox))
         time.sleep(1)  # Small delay to ensure the action is registered
+
+    click("Next")
+    wait_until(lambda: not Text('Loading...').exists(), timeout_secs=15)  # Wait until page is fully loaded
+    select("- Status -", "Completed")
+    click(CheckBox("ID"))
+    wait_until(lambda: not Text('Loading...').exists(), timeout_secs=15)  # Wait until page is fully loaded
+    click("Next")
+    wait_until(lambda: not Text('Loading...').exists(), timeout_secs=15)  # Wait until page is fully loaded
+    click("Next")
+    wait_until(lambda: not Text('Loading...').exists(), timeout_secs=15)  # Wait until page is fully loaded
+    click("OUTPUT")
+
+    monitor_download()
+
+
+def monitor_download():
+    print("Waiting for the download to complete...")
+
+    # Wait until the file appears in the download directory
+    while True:
+        for file in os.listdir(download_dir):
+            if file.endswith(".zip"):
+                print(f"Download complete: {file}")
+                return
+        time.sleep(1)  # Check every second
 
 
 # Main function to run the automation
