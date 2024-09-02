@@ -10,6 +10,8 @@ import time
 import os
 import sys
 from datetime import datetime
+import zipfile
+
 
 # Configurations
 url = "http://192.168.147.74/ConMasManager/"
@@ -160,7 +162,7 @@ def navigate_and_perform_tasks(browser):
     currently the selected data start from -1 month back
     """
     try:
-        date_selection = "2024/08/01"  # Change this starting from
+        date_selection = "2024/08/30"  # Change this starting from
         WebDriverWait(browser, 10).until(
             EC.element_to_be_clickable((By.CLASS_NAME, "img_search"))
         ).click()
@@ -172,7 +174,7 @@ def navigate_and_perform_tasks(browser):
                 (By.XPATH, "//*[@id='SearchInfo_RegistDateFrom']")
             )
         ).send_keys(f"{date_selection}")
-        print("Step 8a Insert date")
+        print("Step 8a Inserted date: %s" % date_selection)
         time.sleep(2)
 
         WebDriverWait(browser, 10).until(
@@ -277,9 +279,29 @@ def monitor_download():
     while True:
         for file in os.listdir(download_dir):
             if file.endswith(".zip"):
+                zip_path = os.path.join(download_dir, file)
                 print(f"Download complete: {file}")
+
+                # Extract the zip file
+                extract_folder = os.path.join(download_dir, "extracted_files")
+                extract_zip(zip_path, extract_folder)
                 return
+
         time.sleep(1)  # Check every second
+
+def extract_zip(zip_path, extract_to):
+    """
+    Extracts a zip file into the specified folder.
+
+    :param zip_path: The path to the zip file to be extracted.
+    :param extract_to: The path to the folder where the files should be extracted.
+    """
+    try:
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(extract_to)
+            print(f"Extracted {zip_path} to {extract_to}")
+    except Exception as e:
+        print(f"An error occurred while extracting {zip_path}: {e}")
 
 
 # Main function to run the automation
