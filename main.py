@@ -69,12 +69,6 @@ def navigate_and_perform_tasks():
         lambda: not Text("Loading...").exists(), timeout_secs=15
     )  # Wait until page is fully loaded
 
-    # This will handle the pop up box asked to keep the file
-    Alert("CSV")
-    wait_until(
-        lambda: not Text("Loading...").exists(), timeout_secs=15
-    )  # Wait until page is fully loaded
-
 
 def monitor_download():
     print("Waiting for the download to complete...")
