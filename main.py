@@ -1,13 +1,16 @@
 from helium import *
 import time
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Configurations
 url = "http://192.168.147.74/ConMasManager/"
 login_page = url + "Login"
 data_output_page = url + "DataOutput"
-username = "user30"
-password = "user30"
+username = os.getenv("USERNAME")
+password = os.getenv("PASSWORD")
 project_dir = os.path.dirname(os.path.abspath(__file__))  # Root directory of the code
 download_dir = project_dir  # Set download directory to the code directory
 
