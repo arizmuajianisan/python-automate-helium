@@ -1,0 +1,6 @@
+# Temporary files
+*.tmp
+
+# Downloaded files
+*.zip
+*.csv
