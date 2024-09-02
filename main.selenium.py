@@ -20,8 +20,10 @@ load_dotenv()
 url = "http://192.168.147.74/ConMasManager/"
 login_page = url + "Login"
 data_output_page = url + "DataOutput"
-username = os.getenv("USERNAME")
-password = os.getenv("PASSWORD")
+username = os.getenv("USER")
+print(username)
+password = os.getenv("PASS")
+print(password)
 project_dir = os.path.dirname(os.path.abspath(__file__))  # Root directory of the code
 download_dir = project_dir  # Set download directory to the code directory
 print(download_dir)
@@ -292,6 +294,7 @@ def monitor_download():
 
         time.sleep(1)  # Check every second
 
+
 def extract_zip(zip_path, extract_to):
     """
     Extracts a zip file into the specified folder.
@@ -300,11 +303,31 @@ def extract_zip(zip_path, extract_to):
     :param extract_to: The path to the folder where the files should be extracted.
     """
     try:
-        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        with zipfile.ZipFile(zip_path, "r") as zip_ref:
             zip_ref.extractall(extract_to)
             print(f"Extracted {zip_path} to {extract_to}")
     except Exception as e:
         print(f"An error occurred while extracting {zip_path}: {e}")
+
+
+def clean_directory(directory):
+    """
+    Deletes all .csv and .tmp files in the specified directory.
+
+    :param directory: The directory to clean.
+    """
+    # List all files in the directory
+    files = os.listdir(directory)
+
+    # Iterate through the files and delete .csv and .tmp files
+    for file in files:
+        if file.endswith(".csv") or file.endswith(".tmp") or file.endswith(".zip"):
+            file_path = os.path.join(directory, file)
+            try:
+                os.remove(file_path)
+                print(f"Deleted: {file_path}")
+            except Exception as e:
+                print(f"Failed to delete {file_path}: {e}")
 
 
 # Main function to run the automation
@@ -323,7 +346,12 @@ def main():
         merge_csv_files(input_directory, output_csv)
 
         elapsed_time = time.time() - start_time
-        print(f"Automation completed successfully. Elapsed time: {elapsed_time} seconds")
+        print(
+            f"Automation completed successfully. Elapsed time: {elapsed_time} seconds"
+        )
+
+        clean_directory("./extracted_files")
+        # clean_directory(download_dir)
     except Exception as e:
         print(f"An error occurred: {e}")
     finally:
