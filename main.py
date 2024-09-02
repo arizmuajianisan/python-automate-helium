@@ -14,7 +14,7 @@ download_dir = project_dir  # Set download directory to the code directory
 
 # Initialize browser
 def initialize_browser():
-    browser = start_chrome(login_page)
+    browser = start_chrome(url)
     return browser
 
 
@@ -48,17 +48,32 @@ def navigate_and_perform_tasks():
         time.sleep(1)  # Small delay to ensure the action is registered
 
     click("Next")
-    wait_until(lambda: not Text('Loading...').exists(), timeout_secs=15)  # Wait until page is fully loaded
+    wait_until(
+        lambda: not Text("Loading...").exists(), timeout_secs=15
+    )  # Wait until page is fully loaded
     select("- Status -", "Completed")
     click(CheckBox("ID"))
-    wait_until(lambda: not Text('Loading...').exists(), timeout_secs=15)  # Wait until page is fully loaded
+    wait_until(
+        lambda: not Text("Loading...").exists(), timeout_secs=15
+    )  # Wait until page is fully loaded
     click("Next")
-    wait_until(lambda: not Text('Loading...').exists(), timeout_secs=15)  # Wait until page is fully loaded
+    wait_until(
+        lambda: not Text("Loading...").exists(), timeout_secs=15
+    )  # Wait until page is fully loaded
     click("Next")
-    wait_until(lambda: not Text('Loading...').exists(), timeout_secs=15)  # Wait until page is fully loaded
+    wait_until(
+        lambda: not Text("Loading...").exists(), timeout_secs=15
+    )  # Wait until page is fully loaded
     click("OUTPUT")
+    wait_until(
+        lambda: not Text("Loading...").exists(), timeout_secs=15
+    )  # Wait until page is fully loaded
 
-    monitor_download()
+    # This will handle the pop up box asked to keep the file
+    Alert("CSV")
+    wait_until(
+        lambda: not Text("Loading...").exists(), timeout_secs=15
+    )  # Wait until page is fully loaded
 
 
 def monitor_download():
