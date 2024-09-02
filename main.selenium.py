@@ -5,9 +5,11 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.select import Select
+from selenium.webdriver.common.keys import Keys
 import time
 import os
 import sys
+from datetime import datetime
 
 # Configurations
 url = "http://192.168.147.74/ConMasManager/"
@@ -24,8 +26,9 @@ print(download_dir)
 def initialize_browser():
     chrome_options = Options()
     chrome_options.add_argument(
-        "--unsafely-treat-insecure-origin-as-secure=http://192.168.147.74/"
+        "--unsafely-treat-insecure-origin-as-secure=http://192.168.147.74/",
     )
+    chrome_options.add_argument("--disable-gpu")  # Disable GPU for faster load times
     chrome_options.add_experimental_option(
         "prefs",
         {
@@ -33,7 +36,7 @@ def initialize_browser():
             "download.prompt_for_download": False,  # Disable the prompt for download
             "safebrowsing.enabled": False,  # Allow potentially dangerous downloads
             "safebrowsing.disable_download_protection": True,  # Disable download protection
-            "credentials_enable_service": False, # Disable credentials service
+            "credentials_enable_service": False,  # Disable credentials service
             "password_manager_enabled": False,  # Disable password manager
             "password_manager_leak_detection": False,  # Disable password
         },
@@ -71,7 +74,9 @@ def navigate_and_perform_tasks(browser):
     Step 2: Search the element "img_search" and click the "Search" button
     """
     try:
-        browser.find_element(By.CLASS_NAME, "img_search").click()
+        WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "img_search"))
+        ).click()
         print("Step 2: Success to click the search button")
     except Exception as e:
         print(f"Step 2 An error occurred while finding the search button: {e}")
@@ -149,15 +154,73 @@ def navigate_and_perform_tasks(browser):
         sys.exit()
 
     """
-    Step 8: Click the all checkbox
+    Step 8a: Select the form with selected time range
+
+    Using date_selection to input the date start
+    currently the selected data start from -1 month back
+    """
+    try:
+        date_selection = "2024/08/01"  # Change this starting from
+        WebDriverWait(browser, 10).until(
+            EC.element_to_be_clickable((By.CLASS_NAME, "img_search"))
+        ).click()
+        print("Step 8a Search button clicked")
+        time.sleep(2)
+
+        WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located(
+                (By.XPATH, "//*[@id='SearchInfo_RegistDateFrom']")
+            )
+        ).send_keys(f"{date_selection}")
+        print("Step 8a Insert date")
+        time.sleep(2)
+
+        WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located(
+                (By.XPATH, "//*[@id='SearchInfo_RegistDateFrom']")
+            )
+        ).send_keys(Keys.ESCAPE)
+
+        WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located((By.ID, "conmasSearchButton"))
+        ).click()
+        time.sleep(2)
+
+        WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located(
+                (By.XPATH, "//*[@id='SearchDialog']/div/div[1]/span/img")
+            )
+        ).click()
+
+        print("Step 8a Click the search button")
+    except Exception as e:
+        print(f"Step 8a An error occurred while clicking the search button: {e}")
+        sys.exit()
+
+    """
+    Step 8b: Click the all checkbox
+    This will drive to select all form, uncomment if this section is used
+    THis 8b only select on the checbox available on this window
+    """
+    # try:
+    #     WebDriverWait(browser, 10).until(
+    #         EC.element_to_be_clickable((By.ID, "HeadCbx"))
+    #     ).click()
+    #     print("Step 8b Success to select the checkbox 'ID'")
+    # except Exception as e:
+    #     print(f"Step 8b An error occurred while selecting the checkbox: {e}")
+    #     sys.exit()
+
+    """
+    Step 8c: Click all the checbox from this output
     """
     try:
         WebDriverWait(browser, 10).until(
-            EC.element_to_be_clickable((By.ID, "HeadCbx"))
+            EC.element_to_be_clickable((By.ID, "IsAllOutput"))
         ).click()
-        print("Step 8 Success to select the checkbox 'ID'")
+        print("Step 8c Success to select the checkbox 'ID'")
     except Exception as e:
-        print(f"Step 8 An error occurred while selecting the checkbox: {e}")
+        print(f"Step 8c An error occurred while selecting the checkbox: {e}")
         sys.exit()
 
     """
@@ -224,9 +287,12 @@ def main():
     browser = initialize_browser()
 
     try:
+        start_time = time.time()
         login(browser)
         navigate_and_perform_tasks(browser)
         monitor_download()
+        elapsed_time = time.time() - start_time
+        print(f"Automation completed successfully. Elapsed time: {elapsed_time} seconds")
     except Exception as e:
         print(f"An error occurred: {e}")
     finally:
