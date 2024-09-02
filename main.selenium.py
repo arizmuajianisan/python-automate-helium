@@ -11,14 +11,17 @@ import os
 import sys
 from datetime import datetime
 import zipfile
+from merge_csv import merge_csv_files
+from dotenv import load_dotenv
 
+load_dotenv()
 
 # Configurations
 url = "http://192.168.147.74/ConMasManager/"
 login_page = url + "Login"
 data_output_page = url + "DataOutput"
-username = "user30"
-password = "user30"
+username = os.getenv("USERNAME")
+password = os.getenv("PASSWORD")
 project_dir = os.path.dirname(os.path.abspath(__file__))  # Root directory of the code
 download_dir = project_dir  # Set download directory to the code directory
 print(download_dir)
@@ -162,7 +165,7 @@ def navigate_and_perform_tasks(browser):
     currently the selected data start from -1 month back
     """
     try:
-        date_selection = "2024/08/30"  # Change this starting from
+        date_selection = "2024/08/28"  # Change this starting from
         WebDriverWait(browser, 10).until(
             EC.element_to_be_clickable((By.CLASS_NAME, "img_search"))
         ).click()
@@ -313,6 +316,12 @@ def main():
         login(browser)
         navigate_and_perform_tasks(browser)
         monitor_download()
+
+        input_directory = os.path.join(download_dir, "extracted_files")
+        output_csv = os.path.join(download_dir, "merged_output.csv")
+
+        merge_csv_files(input_directory, output_csv)
+
         elapsed_time = time.time() - start_time
         print(f"Automation completed successfully. Elapsed time: {elapsed_time} seconds")
     except Exception as e:
