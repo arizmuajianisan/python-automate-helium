@@ -33,15 +33,12 @@ def initialize_browser():
             "download.prompt_for_download": False,  # Disable the prompt for download
             "safebrowsing.enabled": False,  # Allow potentially dangerous downloads
             "safebrowsing.disable_download_protection": True,  # Disable download protection
-            "credentials_enable_service": False,
-            "password_manager_enabled": False, # Disable password manager
-            "password_manager_leak_detection": False, # Disable password
+            "credentials_enable_service": False, # Disable credentials service
+            "password_manager_enabled": False,  # Disable password manager
+            "password_manager_leak_detection": False,  # Disable password
         },
     )
 
-    # Adjust path to the chromedriver as needed
-    # service = Service("D:/playground/chrome-win64/chrome.exe")
-    # browser = webdriver.Chrome(service=service, options=chrome_options)
     browser = webdriver.Chrome(options=chrome_options)
     browser.get(url)
     return browser
@@ -106,31 +103,6 @@ def navigate_and_perform_tasks(browser):
         print(f"Step 4 An error occurred while clicking the search button: {e}")
         sys.exit()
 
-    # Click the checkboxes, this is used when locating the checkboxes using form name
-    # checkboxes = [
-    #     "PCB MOLDING SHIFT 1 Rev. 14",
-    #     "PCB MOLDING SHIFT 2 Rev. 14",
-    #     "PCB MOLDING SHIFT 1 Jumat Rev. 14",
-    #     "PCB MOLDING LONG SHIFT 2 Rev. 14",
-    #     "PCB MOLDING LONG SHIFT 1 Rev. 14",
-    # ]
-
-    # for checkbox in checkboxes:
-    #     WebDriverWait(browser, 10).until(
-    #         EC.presence_of_element_located(
-    #             (By.XPATH, f"//input[@type='Cbx'][@value='{checkbox}']")
-    #         )
-    #     ).click()
-    #     time.sleep(1)  # Small delay to ensure the action is registered
-    # """
-    # # Click the "Next" button
-    # """
-    # try:
-    #     browser.find_element(By.LINK_TEXT, "Next").click()
-    #     wait_until_page_loads(browser)
-    #     print("Success to click the Next button")
-    # except Exception as e:
-    #     print(f"An error occurred while clicking the Next button: {e}")
     """
     Step 5: Select the checkboxes that used
 
@@ -166,12 +138,9 @@ def navigate_and_perform_tasks(browser):
     """
     try:
         select_element = browser.find_element(By.ID, "EditReferStatus")
-        print("Select option: %s", select_element.text)
+        # print("Select option: %s\n", select_element.text) # Debug list optons
         select = Select(select_element)
         select.select_by_visible_text("Completed")
-        # WebDriverWait(browser, 10).until(
-        #     EC.presence_of_element_located((By.ID, "EditReferStatus"))
-        # ).selectByValue("Completed")
         print("Step 7: Success to select the status of form to 'Completed'")
     except Exception as e:
         print(
