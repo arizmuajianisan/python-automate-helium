@@ -17,7 +17,8 @@ def merge_csv_files(input_dir, output_file):
 
     for i, file in enumerate(csv_files):
         file_path = os.path.join(input_dir, file)
-        print(f"Processing {file_path}")
+        # print(f"Processing {file_path}")
+        print(f"Processing {file}")
 
         # Read the CSV file into a DataFrame
         df = pd.read_csv(file_path)
